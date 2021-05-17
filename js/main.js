@@ -5,6 +5,7 @@ const movementDisplay = document.getElementById('movement')
 const canvas = document.getElementById('canvas')
 // Set your Context!
 const ctx = canvas.getContext('2d')
+//**let collision = false**
 
 // Fill Color
 ctx.fillStyle = 'white';
@@ -19,12 +20,7 @@ ctx.strokeRect(10, 10, 100, 100);
 
 canvas.setAttribute("height", getComputedStyle(canvas)["height"])
 canvas.setAttribute("width", getComputedStyle(canvas)["width"])
-
-// function drawBox(x, y, size, color){
-//     ctx.fillStyle = color;
-//     ctx.fillRect(x, y, size, size);
-//   }
-  
+ 
   
 //   const ctx = canvas.getContext('2d')
 
@@ -42,9 +38,9 @@ canvas.setAttribute("width", getComputedStyle(canvas)["width"])
         ctx.fillRect(this.x, this.y, this.width, this.height)
       }
   }
-  
-  let hero = new Crawler(100, 200, 'hotpink', 40, 40);
-  let ogre = new Crawler(500, 150, '#BADA55', 100, 150);
+  let obstacle = new Crawler(40, 120, 'red', 40, 40);
+  let hero = new Crawler(490, 190, 'hotpink', 40, 35);
+  let ogre = new Crawler(680, 50, '#BADA55', 100, 300);
   
   function gameLoop() {
     // Clear the Cavas
@@ -56,6 +52,7 @@ canvas.setAttribute("width", getComputedStyle(canvas)["width"])
         ogre.render()
         //todo detect hit
     }
+    obstacle.render()
     hero.render()
 }
 
@@ -76,22 +73,24 @@ function movementHandler(e) {
         break
       case (39):
         hero.x += 10
+        // if(!collided) {}
     } 
+    //gravity for hero
+    //gravity for obstacle 
   }
-// x=200 y=50 w=150 h=200  topleft(200, 50) topright(350, 50) 
-//                          bottomleft(200, 250) bottomright(350, 250)
+
 function detectHit() {
     // check each side for intersection one by one
     // let ogreLeft = hero.x + hero.width >= ogre.x
     // let ogreRight = hero.x <= ogre.x + ogre.width
     // console.log('ogreRight', ogreRight)
     // console.log('ogreLeft', ogreLeft)
-  
+  // if collision === false {hero.y -= 10}
     /* 
     checking both sides with an or will always be true!
-    (hero.x <= ogre.x + ogre.width || hero.x + hero.width >= ogre.x)
+    // (hero.x <= ogre.x + ogre.width || hero.x + hero.width >= ogre.x)
     hits are only detected only when BOTH are ture!
-    (hero.x <= ogre.x + ogre.width && hero.x + hero.width >= ogre.x)
+    // (hero.x <= ogre.x + ogre.width && hero.x + hero.width >= ogre.x)
     */
   
     // check the top annd bottom 
@@ -101,14 +100,27 @@ function detectHit() {
     // console.log('ogreBottom', ogreBottom)
   
     // one big, confusing if:
-    if (
+    if (                                  //noface
       hero.x + hero.width >= ogre.x &&
       hero.x <= ogre.x + ogre.width &&
       hero.y <= ogre.y + ogre.height &&
       hero.y + hero.height >= ogre.y
       ) {
         // do some game stuff!
-        console.log('hit!')
+        console.log('GAME OVER')
       }
+      if (                                  // obstacle collision 
+        hero.x + hero.width >= obstacle.x &&
+        hero.x <= obstacle.x + obstacle.width &&
+        hero.y <= obstacle.y + obstacle.height &&
+        hero.y + hero.height >= obstacle.y
+        ) {
+          hero.y += 5
+          hero.x += 5
+     }
   }
-  
+  //collision boundaries with obsacles
+  //detect when hero comes into contact with obsacles
+  //when contact with right-side obstacle, turn off hero-left movement 
+  //UNTIL hero-left boundary is no longer in contact with obstacle-right
+  //player will move right as long as contact with obstacle-left is maintained
